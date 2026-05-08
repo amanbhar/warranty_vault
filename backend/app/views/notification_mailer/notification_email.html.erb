@@ -1,0 +1,13 @@
+<h2><%= @title %></h2>
+
+<p><%= @message %></p>
+
+<% if @product_url.present? %>
+  <div class="cta-container">
+    <a href="<%= @product_url %>" class="button">View Product Details</a>
+  </div>
+<% end %>
+
+<p>
+  <a href="<%= @dashboard_url %>">Go to Dashboard →</a>
+</p>

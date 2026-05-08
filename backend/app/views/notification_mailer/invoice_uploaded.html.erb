@@ -1,0 +1,9 @@
+<p>Hi <%= @user.first_name.presence || @user.email.split("@").first %>,</p>
+
+<p><%= @product_name %> is now in your Vault.</p>
+
+<p>We'll remind you before the warranty expires so you never miss it.</p>
+
+<div class="cta-container">
+  <a href="<%= @invoice_url %>" class="button">View Product</a>
+</div>

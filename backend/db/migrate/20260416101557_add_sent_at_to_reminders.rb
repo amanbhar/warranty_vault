@@ -1,0 +1,5 @@
+class AddSentAtToReminders < ActiveRecord::Migration[8.0]
+  def change
+    add_column :reminders, :sent_at, :datetime
+  end
+end

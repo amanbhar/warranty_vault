@@ -1,0 +1,30 @@
+<% greeting_name = @user.first_name.presence || @user.email.split("@").first %>
+<% component_name = @warranty&.component_display_name.presence %>
+
+<p>Hi <%= greeting_name %>,</p>
+
+<% if @days_remaining <= 7 %>
+  <p><strong>Your <%= @product_name %> warranty is almost over.</strong></p>
+  <p>
+    <%= component_name ? "#{component_name} coverage expires in #{@days_remaining} days." : "Coverage expires in #{@days_remaining} days." %>
+    If you need to make a claim, don't wait.
+  </p>
+<% else %>
+  <p><strong>Just a heads up.</strong></p>
+  <p>
+    Your <%= @product_name %> warranty expires in <%= @days_remaining %> days.
+    <%= component_name ? "#{component_name} coverage expires in #{@days_remaining} days." : "Take a look now so you're ready if you need support." %>
+  </p>
+<% end %>
+
+<p><strong>Product:</strong> <%= @product_name %></p>
+
+<% if component_name %>
+  <p><strong>Component:</strong> <%= component_name %></p>
+<% end %>
+
+<p>Expires on <%= @warranty.expires_at.strftime("%B %d, %Y") %>.</p>
+
+<div class="cta-container">
+  <a href="<%= @product_url %>" class="button">View Warranty</a>
+</div>

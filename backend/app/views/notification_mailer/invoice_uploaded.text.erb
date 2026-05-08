@@ -1,0 +1,42 @@
+Invoice Uploaded Successfully - Warranty Vault
+=============================================
+
+Hi <%= @user.first_name || @user.email.split('@').first %>,
+
+Great news! Your invoice has been successfully uploaded and is being processed.
+
+INVOICE DETAILS
+---------------
+<% if @invoice.product_name.present? %>
+Product: <%= @invoice.product_name %>
+<% end %>
+<% if @invoice.brand.present? %>
+Brand: <%= @invoice.brand %>
+<% end %>
+<% if @invoice.total_amount.present? %>
+Amount: ₹<%= @invoice.total_amount.to_f.round(2) %>
+<% end %>
+<% if @invoice.purchase_date.present? %>
+Purchase Date: <%= @invoice.purchase_date.strftime("%B %d, %Y") %>
+<% end %>
+<% if @invoice.warranty_duration.present? %>
+Warranty: <%= @invoice.warranty_duration %> months
+<% end %>
+
+Status: Processing
+
+View your invoice: <%= @invoice_url %>
+
+WHAT HAPPENS NEXT?
+------------------
+1. AI Processing: Our AI is extracting all the important details from your invoice
+2. Review: Check the extracted information and confirm the warranty details
+3. Tracking: Your warranty will be automatically tracked with expiry reminders
+
+You'll receive another notification once the processing is complete and your warranty tracking is active.
+
+Thank you for using Warranty Vault to protect your purchases!
+
+---
+© 2024 Warranty Vault. All rights reserved.
+You're receiving this email because you uploaded an invoice to your Warranty Vault account.

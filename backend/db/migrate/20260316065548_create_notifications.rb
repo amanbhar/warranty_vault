@@ -1,0 +1,21 @@
+class CreateNotifications < ActiveRecord::Migration[8.0]
+  def change
+    create_table :notifications do |t|
+      t.references :user, null: false, foreign_key: true
+      t.string :title, null: false
+      t.text :message, null: false
+      t.string :notification_type, default: 'info', null: false
+      t.boolean :read, default: false, null: false
+      t.string :action_url
+      t.json :metadata
+
+      t.timestamps
+    end
+
+    # Add indexes for performance
+    add_index :notifications, :read
+    add_index :notifications, :created_at
+    add_index :notifications, :notification_type
+    add_index :notifications, [ :user_id, :read ]
+  end
+end

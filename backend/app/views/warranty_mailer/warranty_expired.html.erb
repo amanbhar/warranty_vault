@@ -1,0 +1,9 @@
+<p>Hi <%= @user.first_name.presence || @user.email.split("@").first %>,</p>
+
+<p>Your warranty for <%= @product_name %> expired on <%= @warranty.expires_at.strftime("%B %d, %Y") %>.</p>
+
+<p>If you bought an extended warranty, upload it and we'll keep tracking it for you.</p>
+
+<div class="cta-container">
+  <a href="<%= @product_url %>" class="button">Open Vault</a>
+</div>

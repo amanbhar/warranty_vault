@@ -1,0 +1,104 @@
+version: "3.9"
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16
+    container_name: warranty_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: warranty_vault_development
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis Cache & Jobs Queue
+  redis:
+    image: redis:7-alpine
+    container_name: warranty_redis
+    restart: unless-stopped
+    # Using 6380 on host to avoid conflict with any local Redis on 6379
+    ports:
+      - "6380:6379"
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Rails Backend API
+  backend:
+    build:
+      context: ./apps/backend
+      dockerfile: Dockerfile
+    container_name: warranty_backend
+    volumes:
+      - ./apps/backend:/rails
+      - bundle_cache:/usr/local/bundle
+      - rails_log:/rails/log
+      - rails_tmp:/rails/tmp
+    ports:
+      - "3005:3005"
+    env_file:
+      - ./apps/backend/.env
+    stdin_open: true
+    tty: true
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # Sidekiq Background Jobs
+  sidekiq:
+    build:
+      context: ./apps/backend
+      dockerfile: Dockerfile
+    container_name: warranty_sidekiq
+    command: [ "bundle", "exec", "sidekiq", "-q", "high_priority", "-q", "default", "-q", "low_priority" ]
+    volumes:
+      - ./apps/backend:/rails
+      - bundle_cache:/usr/local/bundle
+      - rails_log:/rails/log
+      - rails_tmp:/rails/tmp
+    env_file:
+      - ./apps/backend/.env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # React/Vite Frontend
+  frontend:
+    build:
+      context: ./apps/frontend
+      dockerfile: Dockerfile
+    container_name: warranty_frontend
+    volumes:
+      - ./apps/frontend:/app
+      - frontend_node_modules:/app/node_modules
+    ports:
+      - "3006:3006"
+    env_file:
+      - ./apps/frontend/.env
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  bundle_cache:
+  frontend_node_modules:
+  rails_log:
+  rails_tmp:

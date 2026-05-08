@@ -1,0 +1,17 @@
+# Rails
+backend/log/*
+backend/tmp/*
+backend/storage/*
+backend/vendor/bundle
+backend/.env
+
+# Next
+frontend/node_modules
+frontend/.next
+# frontend/.env.local
+frontend/.env
+apps/frontend/node_modules
+
+# General
+.DS_Store
+coverage

@@ -1,0 +1,46 @@
+# Sidekiq-Cron schedule
+# Loaded by the Sidekiq initializer on boot.
+#
+# Architecture rule: only ONE job per concern.
+#   • process_due_reminders — hourly warranty reminder dispatcher
+#   • daily_engagement      — 12 PM daily engagement message
+#   • maintenance jobs      — cleanup only
+
+# ── WARRANTY REMINDER (every hour) ──────────────────────────
+process_due_reminders:
+  cron: "0 * * * *"
+  class: "ProcessDueRemindersJob"
+  queue: high_priority
+  description: "Process due warranty reminders (hourly)"
+
+# ── DAILY ENGAGEMENT (every day at 12 PM UTC) ────────────────
+daily_engagement:
+  cron: "0 12 * * *"
+  class: "DailyEngagementJob"
+  queue: default
+  description: "Send daily engagement notification to all users"
+
+# ── MAINTENANCE ───────────────────────────────────────────────
+cleanup_expired_tokens:
+  cron: "0 */6 * * *"
+  class: "TokenCleanupJob"
+  queue: maintenance
+  description: "Clean up expired verification tokens (every 6 h)"
+
+cleanup_old_notifications:
+  cron: "0 3 * * *"
+  class: "NotificationCleanupJob"
+  queue: maintenance
+  description: "Delete notifications older than 30 days (3 AM)"
+
+draft_cleanup:
+  cron: "0 4 * * *"
+  class: "DraftCleanupJob"
+  queue: maintenance
+  description: "Delete draft invoices older than 7 days (4 AM)"
+
+file_cleanup:
+  cron: "0 2 * * 0"
+  class: "FileCleanupJob"
+  queue: default
+  description: "Weekly temp-file cleanup (Sunday 2 AM)"
